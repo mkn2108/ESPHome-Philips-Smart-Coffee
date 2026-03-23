@@ -33,7 +33,11 @@ namespace esphome
             // Pipe display to mainboard
             if (display_uart_.available())
             {
-                std::size_t size = std::min(display_uart_.available(), DISPLAY_BUFFER_SIZE);
+                int avail = display_uart_.available();
+                std::size_t size = std::min(
+                    static_cast<std::size_t>(avail > 0 ? avail : 0),
+                    DISPLAY_BUFFER_SIZE
+                );
                 display_uart_.read_array(display_buffer, size);
 
                 // Check if a action button is currently performing a long press
@@ -97,7 +101,11 @@ namespace esphome
             // Pipe to display
             if (mainboard_uart_.available())
             {
-                std::size_t size = std::min(mainboard_uart_.available(), MAINBOARD_BUFFER_SIZE - 2);
+                int avail = mainboard_uart_.available();
+                std::size_t size = std::min(
+                    static_cast<std::size_t>(avail > 0 ? avail : 0),
+                    MAINBOARD_BUFFER_SIZE - 2
+                );
                 mainboard_uart_.read_array(mainboard_buffer + 2, size);
 
                 display_uart_.write_array(mainboard_buffer + 2, size);
